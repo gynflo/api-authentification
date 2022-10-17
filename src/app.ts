@@ -4,6 +4,7 @@ import compression from "compression";
 import helmet from "helmet";
 import cors from "cors";
 import morgan from "morgan";
+import cookieParser from "cookie-parser";
 
 //Interface
 import type { Controller } from "./utils/interfaces/controller.interface";
@@ -40,6 +41,7 @@ class App {
     this.express.use(express.json());
     this.express.use(express.urlencoded({ extended: false }));
     this.express.use(compression());
+    this.express.use(cookieParser());
   }
 
   public listen(): void {

@@ -1,5 +1,5 @@
 import UserModel from "./user.model";
-import { createToken } from "../../utils/token";
+import { createToken, verifyToken } from "../../utils/token";
 import { v4 as uuid } from "uuid";
 
 class UserService {
@@ -31,7 +31,7 @@ class UserService {
 
   public async login(email: string, password: string): Promise<string | Error> {
     try {
-      const user = await this.user.findOne({ email });
+      const user = await this.user.findOne({ "local.email": email });
       if (!user) {
         throw new Error(`Unable to find user with that email Address`);
       }
@@ -43,6 +43,16 @@ class UserService {
       }
     } catch (e) {
       throw new Error("Something went wrong !");
+    }
+  }
+
+  public async getUserByToken(token: string) {
+    try {
+      const { sub: id } = verifyToken(token);
+      const user = await this.user.findById(id).select("-local.password -__v");
+      return user;
+    } catch (e) {
+      throw new Error(`User unknown`);
     }
   }
 }
