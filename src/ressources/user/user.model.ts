@@ -23,6 +23,7 @@ const UserSchema = new Schema(
       isCheckEmail: {
         type: Boolean,
         required: true,
+        default: false,
       },
       emailToken: {
         type: String,

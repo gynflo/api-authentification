@@ -15,9 +15,9 @@ class App {
   constructor(controllers: Controller[], port: number) {
     this.express = express();
     this.port = port;
-    this.initializeControllers(controllers);
     this.initializeDatabaseConnection();
     this.initializeMiddleware();
+    this.initializeControllers(controllers);
   }
 
   private initializeControllers(controllers: Controller[]): void {
@@ -27,9 +27,9 @@ class App {
   }
 
   private initializeDatabaseConnection(): void {
-    const { URLDATABASE, NAMECOLLECTIONDATABASE } = process.env;
-    mongoose.connect(`${URLDATABASE}`).then(() => {
-      console.log(`${NAMECOLLECTIONDATABASE} connexion OK`);
+    const { URL_DATABASE, NAME_COLLECTION_DATABASE } = process.env;
+    mongoose.connect(`${URL_DATABASE}`).then(() => {
+      console.log(`${NAME_COLLECTION_DATABASE} connexion OK`);
     });
   }
 
