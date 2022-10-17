@@ -5,26 +5,35 @@ import helmet from "helmet";
 import cors from "cors";
 import morgan from "morgan";
 
+//Interface
+import type { Controller } from "./utils/interfaces/controller.interface";
+
 class App {
   public express: Application;
   public port: number;
 
-  constructor(port: number) {
+  constructor(controllers: Controller[], port: number) {
     this.express = express();
     this.port = port;
-
+    this.initializeControllers(controllers);
     this.initializeDatabaseConnection();
     this.initializeMiddleware();
   }
 
-  private initializeDatabaseConnection() {
+  private initializeControllers(controllers: Controller[]): void {
+    controllers.forEach((controller: Controller) => {
+      this.express.use("/api/v1", controller.router);
+    });
+  }
+
+  private initializeDatabaseConnection(): void {
     const { URLDATABASE, NAMECOLLECTIONDATABASE } = process.env;
     mongoose.connect(`${URLDATABASE}`).then(() => {
       console.log(`${NAMECOLLECTIONDATABASE} connexion OK`);
     });
   }
 
-  private initializeMiddleware() {
+  private initializeMiddleware(): void {
     this.express.use(cors());
     this.express.use(morgan("dev"));
     this.express.use(helmet());

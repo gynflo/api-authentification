@@ -1,8 +1,8 @@
 import "dotenv/config";
 import App from "./app";
 
-console.log(process.env.PORT);
+import { UserController } from "./ressources/user/user.controller";
 
-const app = new App(Number(process.env.PORT));
+const app = new App([new UserController()], Number(process.env.PORT));
 
 app.listen();

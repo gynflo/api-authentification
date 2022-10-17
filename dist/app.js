@@ -12,11 +12,17 @@ const morgan_1 = __importDefault(require("morgan"));
 class App {
     express;
     port;
-    constructor(port) {
+    constructor(controllers, port) {
         this.express = (0, express_1.default)();
         this.port = port;
+        this.initializeControllers(controllers);
         this.initializeDatabaseConnection();
         this.initializeMiddleware();
+    }
+    initializeControllers(controllers) {
+        controllers.forEach((controller) => {
+            this.express.use("/api/v1", controller.router);
+        });
     }
     initializeDatabaseConnection() {
         const { URLDATABASE, NAMECOLLECTIONDATABASE } = process.env;
