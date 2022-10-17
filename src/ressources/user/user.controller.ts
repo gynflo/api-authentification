@@ -39,6 +39,18 @@ export class UserController implements Controller {
       next(new HttpException(400, e.message));
     }
   };
-  private login = async () => {};
+  private login = async (
+    req: Request,
+    res: Response,
+    next: NextFunction
+  ): Promise<Response | void> => {
+    try {
+      const { email, password } = req.body;
+      const token = await this.UserService.login(email, password);
+      res.status(200).json({ token });
+    } catch (e: any) {
+      next(new HttpException(400, e.message));
+    }
+  };
   private getCurrentUser = async () => {};
 }
