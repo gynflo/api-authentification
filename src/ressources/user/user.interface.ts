@@ -6,8 +6,10 @@ export interface User extends Document {
   role: string;
   local: {
     email: string;
-    emailVerified: boolean;
+    isCheckEmail: boolean;
     emailToken: string;
     password: string;
   };
+
+  isValidPassword(password: string): Promise<boolean | Error>;
 }
