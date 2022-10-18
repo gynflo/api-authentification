@@ -8,6 +8,8 @@ import cookieParser from "cookie-parser";
 
 //Interface
 import type { Controller } from "./utils/interfaces/controller.interface";
+//Middleware
+import { ErrorMiddleware } from "./middlewares/error.middleware";
 
 class App {
   public express: Application;
@@ -19,6 +21,7 @@ class App {
     this.initializeDatabaseConnection();
     this.initializeMiddleware();
     this.initializeControllers(controllers);
+    this.initializeErrorHandling();
   }
 
   private initializeControllers(controllers: Controller[]): void {
@@ -42,6 +45,10 @@ class App {
     this.express.use(express.urlencoded({ extended: false }));
     this.express.use(compression());
     this.express.use(cookieParser());
+  }
+
+  private initializeErrorHandling(): void {
+    this.express.use(ErrorMiddleware);
   }
 
   public listen(): void {

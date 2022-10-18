@@ -9,7 +9,7 @@ export function validationFormMiddleware(schema: Joi.Schema): RequestHandler {
   ): Promise<void> => {
     const options: Joi.AsyncValidationOptions = {
       abortEarly: true,
-      allowUnknown: true,
+      allowUnknown: false,
       stripUnknown: true,
     };
 
