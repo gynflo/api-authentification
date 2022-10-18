@@ -4,6 +4,9 @@ import { Controller } from "../../utils/interfaces/controller.interface";
 import UserService from "./user.service";
 //Middleware
 import authenticatedMiddleware from "../../middlewares/authenticated.middleware";
+//Sanitize Form Entries/Inputs
+import { validationFormMiddleware } from "../../middlewares/validation.middleware";
+import { registrationForm, loginForm } from "./user.validation";
 
 export class UserController implements Controller {
   public path = "/users";
@@ -16,9 +19,17 @@ export class UserController implements Controller {
 
   private initializeRoutes(): void {
     //users/register
-    this.router.post(`${this.path}/register`, this.register);
+    this.router.post(
+      `${this.path}/register`,
+      validationFormMiddleware(registrationForm),
+      this.register
+    );
     //users/login
-    this.router.post(`${this.path}/login`, this.login);
+    this.router.post(
+      `${this.path}/login`,
+      validationFormMiddleware(loginForm),
+      this.login
+    );
     //users/current
     this.router.get(
       `${this.path}/current`,
