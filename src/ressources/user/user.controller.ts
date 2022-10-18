@@ -2,6 +2,8 @@ import { Router, Request, Response, NextFunction } from "express";
 import HttpException from "../../utils/exceptions/http.exception";
 import { Controller } from "../../utils/interfaces/controller.interface";
 import UserService from "./user.service";
+//Middleware
+import authenticatedMiddleware from "../../middlewares/authenticated.middleware";
 
 export class UserController implements Controller {
   public path = "/users";
@@ -18,9 +20,17 @@ export class UserController implements Controller {
     //users/login
     this.router.post(`${this.path}/login`, this.login);
     //users/current
-    this.router.get(`${this.path}/current`, this.getCurrentUser);
+    this.router.get(
+      `${this.path}/current`,
+      authenticatedMiddleware,
+      this.getCurrentUser
+    );
     //users/logout
-    this.router.delete(`${this.path}/logout`, this.logout);
+    this.router.delete(
+      `${this.path}/logout`,
+      authenticatedMiddleware,
+      this.logout
+    );
   }
 
   private register = async (
@@ -65,8 +75,6 @@ export class UserController implements Controller {
     next: NextFunction
   ): Promise<Response | void> => {
     const token = req.cookies.token;
-    console.log(req.headers.authorization);
-
     try {
       const user = await this.UserService.getUserByToken(token);
       res.status(200).json({ user });

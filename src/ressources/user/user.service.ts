@@ -2,6 +2,7 @@ import UserModel from "./user.model";
 import { createToken, verifyToken } from "../../utils/token";
 import { v4 as uuid } from "uuid";
 
+
 class UserService {
   private user = UserModel;
 
@@ -48,9 +49,13 @@ class UserService {
 
   public async getUserByToken(token: string) {
     try {
-      const { sub: id } = verifyToken(token);
-      const user = await this.user.findById(id).select("-local.password -__v");
-      return user;
+      const payload = await verifyToken(token);
+      if (payload.sub) {
+        const user = await this.user
+          .findById(payload.sub)
+          .select("-local.password -__v");
+        return user;
+      }
     } catch (e) {
       throw new Error(`User unknown`);
     }

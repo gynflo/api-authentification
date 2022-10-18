@@ -1,4 +1,9 @@
-import { sign, Secret, verify, JwtPayload } from "jsonwebtoken";
+import {
+  sign,
+  Secret,
+  verify,
+  JwtPayload,
+} from "jsonwebtoken";
 import { User } from "../ressources/user/user.interface";
 import { key, keyPub } from "../env/index";
 
@@ -10,6 +15,13 @@ export function createToken(user: User): string {
   });
 }
 
-export function verifyToken(token: string): JwtPayload | string {
-  return verify(token, keyPub);
-}
+export const verifyToken = async (
+  token: string
+): Promise<JwtPayload> => {
+  return new Promise((resolve, reject) => {
+    verify(token, keyPub as Secret, (err, payload) => {
+      if (err) return reject(err);
+      resolve(payload as JwtPayload);
+    });
+  });
+};
