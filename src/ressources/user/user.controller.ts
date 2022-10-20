@@ -8,6 +8,10 @@ import authenticatedMiddleware from "../../middlewares/authenticated.middleware"
 import { validationFormMiddleware } from "../../middlewares/validation.middleware";
 import { registrationForm, loginForm } from "./user.validation";
 
+//Email
+import Email from "../../ressources/emails/email.config";
+
+
 export class UserController implements Controller {
   public path = "/users";
   public router = Router();
@@ -49,21 +53,30 @@ export class UserController implements Controller {
     res: Response,
     next: NextFunction
   ): Promise<Response | void> => {
-    console.log(req.body);
-    
     try {
       const { username, email, password } = req.body;
-      const token = await this.UserService.register(
+      const user = await this.UserService.register(
         username,
         email,
         password,
         "user"
       );
-      res.status(201).json({ token });
+      if (!user) {
+        throw new Error("");
+      }
+      Email.sendEmailVerification({
+        to: user.local.email,
+        host: req.headers.host!,
+        username: user.username,
+        userId: user._id!,
+        token: user.local.emailToken,
+      });
+      res.status(201).json({ user });
     } catch (e: any) {
       next(new HttpException(400, e.message));
     }
   };
+
   private login = async (
     req: Request,
     res: Response,
@@ -78,16 +91,19 @@ export class UserController implements Controller {
       next(new HttpException(400, e.message));
     }
   };
+
   private logout = async (_: Request, res: Response, __: NextFunction) => {
     res.clearCookie("token");
     res.end();
   };
+
   private getCurrentUser = async (
     req: Request,
     res: Response,
     next: NextFunction
   ): Promise<Response | void> => {
     const token = req.cookies.token;
+
     try {
       const user = await this.UserService.getUserByToken(token);
       res.status(200).json({ user });

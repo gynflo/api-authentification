@@ -2,6 +2,17 @@ import UserModel from "./user.model";
 import { createToken, verifyToken } from "../../utils/token";
 import { v4 as uuid } from "uuid";
 
+interface User {
+  _id?: string,
+  username: string;
+  role: string;
+  local: {
+    email: string;
+    password: string;
+    isCheckEmail: boolean;
+    emailToken: string;
+  };
+}
 
 class UserService {
   private user = UserModel;
@@ -11,7 +22,7 @@ class UserService {
     email: string,
     password: string,
     role: string
-  ): Promise<string | Error> {
+  ): Promise<User> {
     try {
       const user = await this.user.create({
         username,
@@ -23,8 +34,8 @@ class UserService {
           emailToken: uuid(),
         },
       });
-      const accessToken = createToken(user);
-      return accessToken;
+      createToken(user);
+      return user;
     } catch (e) {
       throw new Error("Unable to create user");
     }
