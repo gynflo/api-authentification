@@ -10,6 +10,8 @@ import cookieParser from "cookie-parser";
 import type { Controller } from "./utils/interfaces/controller.interface";
 //Middleware
 import { ErrorMiddleware } from "./middlewares/error.middleware";
+import exp from "constants";
+import path from "path";
 
 class App {
   public express: Application;
@@ -42,6 +44,8 @@ class App {
     this.express.use(morgan("dev"));
     this.express.use(helmet());
     this.express.use(express.json());
+    this.express.set("views", path.join(__dirname, "ressources/emails/views"));
+    this.express.set("view engine", "pug");
     this.express.use(express.urlencoded({ extended: false }));
     this.express.use(compression());
     this.express.use(cookieParser());

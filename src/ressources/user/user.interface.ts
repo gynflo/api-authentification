@@ -9,6 +9,8 @@ export interface User extends Document {
     isCheckEmail: boolean;
     emailToken: string;
     password: string;
+    passwordToken: string | null;
+    passwordTokenExpiration: Date | null;
   };
 
   isValidPassword(password: string): Promise<boolean | Error>;

@@ -3,7 +3,7 @@ import { createToken, verifyToken } from "../../utils/token";
 import { v4 as uuid } from "uuid";
 
 interface User {
-  _id?: string,
+  _id?: string;
   username: string;
   role: string;
   local: {
@@ -47,6 +47,9 @@ class UserService {
       if (!user) {
         throw new Error(`Unable to find user with that email Address`);
       }
+      //test
+      console.log("isValidPassword", await user.isValidPassword(password));
+      // fin test
 
       if (await user.isValidPassword(password)) {
         return createToken(user);
@@ -54,7 +57,7 @@ class UserService {
         throw new Error(`Wrong Credentials`);
       }
     } catch (e) {
-      throw new Error("Something went wrong !");
+      throw new Error("Something went wrong with login !");
     }
   }
 

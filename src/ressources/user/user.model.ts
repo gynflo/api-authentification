@@ -1,5 +1,5 @@
 import { Schema, model } from "mongoose";
-import { hash, compare } from "bcrypt";
+import bcrypt from "bcrypt";
 import { User } from "./user.interface";
 
 const UserSchema = new Schema(
@@ -33,6 +33,12 @@ const UserSchema = new Schema(
         type: String,
         required: true,
       },
+      passwordToken: {
+        type: String,
+      },
+      passwordTokenExpiration: {
+        type: Date,
+      },
     },
   },
   {
@@ -41,13 +47,14 @@ const UserSchema = new Schema(
 );
 
 // HashPassword
+
 UserSchema.pre<User>("save", async function (next) {
   //Returns true if any of the given paths ("local.password") are modified, else false.
   if (!this.isModified("local.password")) {
     next();
   }
 
-  const hashedPassword = await hash(this.local.password, 10);
+  const hashedPassword = await bcrypt.hash(this.local.password, 10);
   this.local.password = hashedPassword;
   next();
 });
@@ -56,7 +63,7 @@ UserSchema.pre<User>("save", async function (next) {
 UserSchema.methods.isValidPassword = async function (
   password: string
 ): Promise<Boolean | Error> {
-  return await compare(password, this.local.password);
+  return await bcrypt.compare(password, this.local.password);
 };
 
 export default model<User>("user", UserSchema);
